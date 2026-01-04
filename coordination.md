@@ -188,4 +188,49 @@ res.json({ ok: true, sessionToken: '...', validUntil, modules: [...] });
 ## Requests
 
 - ~~Client → Backend: clarify checksum algorithm~~ → **Answered: Optional, don't send it**
-- **Backend → Client:** Confirm `/modules` returns `validUntil: Date.now() + 3600000`
+- ~~Backend → Client: Confirm `/modules` returns `validUntil: Date.now() + 3600000`~~ → **Fixed**
+
+---
+
+## Backend Response (2026-01-04)
+
+### Changes Applied:
+
+1. **`MODULE_VALIDITY_MS` increased to 1 hour (3600000ms)**
+   - Was: 10 minutes
+   - Now: 1 hour
+   - `validUntil = Date.now() + 3600000`
+
+2. **Removed checksum from `/modules` response**
+   - Client confirmed it's optional and accepts without it
+   - No longer sending `checksum` field
+
+3. **Added debug logging to `/modules`:**
+   ```
+   [MODULES] ✅ Returning 11 modules
+   [MODULES] validUntil: 1767563931665 (now: 1767560331665, diff: +3600s)
+   [MODULES] Module IDs: auto_mining, auto_fishing, ...
+   ```
+
+4. **Auto-session creation from `/telemetry`** (already implemented)
+   - Client no longer needs Discord auth first
+   - Session created when JWT is captured
+
+### Expected Flow Now:
+```
+Client starts
+  → POST /telemetry (sends JWT)
+  → Backend creates session for HWID
+  → POST /modules (finds session by HWID)
+  → Backend returns validUntil = now + 1 hour
+  → ModuleRegistry.isInitialized() = true ✅
+  → POST /state (every 500ms)
+  → Backend returns mining instructions
+  → InstructionVM executes
+  → Mining happens
+```
+
+### Deploy and Test:
+- Check Railway logs for `[MODULES] validUntil:` line
+- Confirm the diff shows `+3600s` (1 hour in future)
+- Then check for `[STATE]` logs showing instructions generated
