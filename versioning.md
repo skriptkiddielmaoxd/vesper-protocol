@@ -1,0 +1,3 @@
+- Patch: no protocol change
+- Minor: additive fields only
+- Major: breaking changes, client must update

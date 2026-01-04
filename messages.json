@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "client_to_server": {
+    "AUTH_INIT": {
+      "payload": ["hwid", "token", "client_version"]
+    },
+    "MODULE_STATE_REQUEST": {
+      "payload": ["session_id"]
+    }
+  },
+  "server_to_client": {
+    "AUTH_OK": {
+      "payload": ["session_id", "expires_at"]
+    },
+    "MODULE_BUNDLE": {
+      "payload": ["modules", "checksum"]
+    }
+  }
+}

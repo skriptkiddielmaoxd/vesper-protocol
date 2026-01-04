@@ -1,0 +1,106 @@
+{
+  "auto_mining": {
+    "flags": ["macro", "automation"],
+    "server_controls": ["enabled", "range", "target_blocks", "speed", "smoothness"]
+  },
+  "auto_fishing": {
+    "flags": ["macro", "automation"],
+    "server_controls": ["enabled", "auto_recast", "catch_delay"]
+  },
+  "auto_farming": {
+    "flags": ["macro", "automation"],
+    "server_controls": ["enabled", "crop_types", "replant"]
+  },
+  "auto_foraging": {
+    "flags": ["macro", "automation"],
+    "server_controls": ["enabled", "tree_types", "range"]
+  },
+  "commission_macro": {
+    "flags": ["macro", "automation", "skyblock"],
+    "server_controls": ["enabled", "commission_types", "auto_claim"]
+  },
+  "esp_manager": {
+    "flags": ["visual", "render"],
+    "server_controls": ["enabled", "render_distance", "box_alpha"]
+  },
+  "fullbright": {
+    "flags": ["visual", "client_only"],
+    "server_controls": ["enabled", "gamma_level"]
+  },
+  "entity_esp": {
+    "flags": ["visual", "render", "esp"],
+    "server_controls": ["enabled", "show_players", "show_mobs", "show_items"]
+  },
+  "block_esp": {
+    "flags": ["visual", "render", "esp"],
+    "server_controls": ["enabled", "block_types"]
+  },
+  "gemstone_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "gem_types", "show_pristine"]
+  },
+  "fairy_soul_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "show_collected"]
+  },
+  "enigma_soul_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled"]
+  },
+  "pest_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "pest_types"]
+  },
+  "pelt_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled"]
+  },
+  "mushroom_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "mushroom_types"]
+  },
+  "inquisitor_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "show_tracers"]
+  },
+  "vanquisher_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "show_tracers"]
+  },
+  "cinderbat_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled"]
+  },
+  "dragon_hitbox_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled", "show_aura"]
+  },
+  "shiny_blocks_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled"]
+  },
+  "hostage_esp": {
+    "flags": ["visual", "render", "esp", "skyblock"],
+    "server_controls": ["enabled"]
+  },
+  "custom_esp": {
+    "flags": ["visual", "render", "esp"],
+    "server_controls": ["enabled", "custom_entities", "custom_blocks"]
+  },
+  "anti_afk": {
+    "flags": ["utility", "client_only"],
+    "server_controls": ["enabled", "interval", "movement_type"]
+  },
+  "failsafe": {
+    "flags": ["utility", "safety"],
+    "server_controls": ["enabled", "triggers", "action"]
+  },
+  "pathfinding": {
+    "flags": ["macro", "navigation"],
+    "server_controls": ["enabled", "algorithm", "avoid_mobs"]
+  },
+  "island_route": {
+    "flags": ["macro", "navigation", "skyblock"],
+    "server_controls": ["enabled", "route_name", "waypoints"]
+  }
+}
