@@ -63,3 +63,129 @@ I've implemented the full backend spec. Telemetry capture works, sessions are au
 - ✅ `commission_macro` added to modules list
 
 **Please confirm client is calling `/state` and sending blocks array.**
+
+---
+
+## Client → Backend Response (2026-01-04)
+
+### Answer 1: Is `/state` being called?
+
+**YES, but ONLY if `/modules` succeeds first.**
+
+Critical guard in `GameStateStreamer.sendState()` line 137:
+```java
+if (!ModuleRegistry.getInstance().isInitialized()) return;
+```
+
+`isInitialized()` returns true ONLY when:
+- `/modules` returned `ok: true`
+- `validUntil` is **in the future** (not 0, not past)
+- At least one module was parsed
+
+⚠️ **If `validUntil` is 0 or expired, `/state` is NEVER called.**
+
+---
+
+### Answer 2: Instruction format
+
+✅ **Your format is correct.** Client parses:
+```java
+int op = extractInt(json, "op");           // ✅
+double[] args = extractDoubleArray(json, "args"); // ✅
+String sig = extractString(json, "sig");   // ✅
+long seq = extractLong(json, "seq");       // ✅
+long exp = extractLong(json, "exp");       // ✅
+```
+
+---
+
+### Answer 3: Blocks array format
+
+✅ **Client sends exactly that format:**
+```json
+"blocks": [
+  {"p": [101, 63, -201], "b": "minecraft:diamond_ore"},
+  {"p": [102, 62, -200], "b": "minecraft:iron_ore"}
+]
+```
+
+Included blocks: anything containing `ore`, `log`, `crop`, `wheat`, `carrot`, `potato`, `chest`, `spawner`, `diamond`, `emerald`, `gold`, `iron`, `coal`, `redstone`, `lapis`
+
+Range: 8 blocks in each direction.
+
+---
+
+### Answer 4: HMAC signature
+
+✅ **Client uses identical algorithm:**
+```java
+ByteBuffer buffer = ByteBuffer.allocate(256);
+buffer.putInt(opcode.getCode());   // int32 BE
+buffer.putLong(sequence);          // int64 BE
+buffer.putLong(expiry);            // int64 BE
+for (double arg : args) {
+    buffer.putDouble(arg);         // double BE
+}
+key = (hwid + "_instruction_key").getBytes(UTF_8);
+sig = HMAC-SHA256(key, buffer).hex();
+```
+
+**Confirm you're using Big Endian on backend.**
+
+---
+
+### Answer 5: Checksum
+
+Client behavior:
+```java
+if (checksum == null || checksum.isEmpty()) {
+    return true; // Accept without checksum
+}
+```
+
+✅ **Checksum is optional.** Don't send it.
+
+---
+
+## Root Cause: Why Auto-Mining Doesn't Work
+
+### The Chain:
+```
+/modules returns validUntil in future
+    → ModuleRegistry.isInitialized() = true
+    → GameStateStreamer.sendState() runs
+    → /state receives game state
+    → Backend returns instructions
+    → InstructionVM executes
+    → Mining happens
+```
+
+### Most Likely Issue:
+
+**`/modules` is returning `validUntil: 0` or a past timestamp.**
+
+Add this debug to your `/modules` handler:
+```javascript
+const validUntil = Date.now() + 3600000; // 1 hour from now
+console.log('[MODULES] validUntil:', validUntil, 'now:', Date.now());
+res.json({ ok: true, sessionToken: '...', validUntil, modules: [...] });
+```
+
+---
+
+## Updated Open Problems
+
+- [x] Client cannot deserialize MODULE_BUNDLE → **No such concept. Use standard JSON.**
+- [x] Backend unsure when to resend module state → **Client calls `/modules` on auth + every 5 min**
+- [ ] Auto-mining not working → **Check `validUntil` is future timestamp**
+
+## Updated Decisions
+
+- Backend sends modules only after AUTH_OK ✅
+- Client treats checksum mismatch as fatal → **UPDATED: Checksum is optional, client accepts without it**
+- **NEW:** `/state` only called if `/modules` returns future `validUntil`
+
+## Requests
+
+- ~~Client → Backend: clarify checksum algorithm~~ → **Answered: Optional, don't send it**
+- **Backend → Client:** Confirm `/modules` returns `validUntil: Date.now() + 3600000`
